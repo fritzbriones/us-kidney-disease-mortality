@@ -15,7 +15,9 @@ mydata <- read_excel("mortality.xlsx")
 
 # Transform the map layout to Albers Equal Area Projection (EPSG 5070)
 # This gives the US its classic, professional, curved shape
-g_map_projected <- st_transform(g_map, crs = 5070)
+g_map_projected <- g_map %>%
+  filter(STUSPS %in% c(state.abb, "DC")) %>%   # 50 states + DC; drops territories (PR, GU, VI, MP, AS)
+  st_transform(crs = 5070)
 
 
 # === BATCH 2: DATA JOIN & TYPE CLEANING ===
