@@ -35,6 +35,7 @@ To run the script smoothly, ensure your local project folder mirrors this struct
 
 ```text
 KidneyDisease.R           # The finalized clean plotting script
+KidneyDisease_v2_2_corrected.R  # Stricter version: validates every join and writes data_validation_report.csv
 mortality.xlsx            # Source Excel spreadsheet
 Kidney Disease Map.png    # Final exported presentation map graphic
 cb_2018_us_state_500k.shp # Main shapefile
@@ -64,3 +65,14 @@ The script `KidneyDisease.R` is designed to be executed incrementally rather tha
 3. **Albers Coordinate Transformation** — the geometry layout is converted to the Albers Equal Area Conic projection before data integration.
 4. **Isolated Data Combination** — the relational data frames are joined via `left_join`, and spatial attributes are mutated into numeric fields while watching for type conflicts.
 5. **Canvas Display & Export** — the final ggplot2 engine draws state borders, assigns the viridis Plasma color spectrum, and saves the presentation map to `Kidney Disease Map.png`.
+
+### Two scripts
+
+* `KidneyDisease.R` produces the map shown above (3600 × 2400 px at 300 dpi). It keeps the
+  50 states and DC and drops US territories (Puerto Rico, Guam, etc.) before joining.
+* `KidneyDisease_v2_2_corrected.R` is a stricter version for publication use: it stops on any
+  missing, duplicate or non-numeric value, writes `data_validation_report.csv`, and exports a
+  14 × 9 in map with a slightly different title.
+
+`Mortality.csv` is a plain-text copy of the data for reference; the scripts read `mortality.xlsx`.
+
