@@ -24,8 +24,9 @@ suppressPackageStartupMessages({
 # 2024: 12.6 (NCHS Data Brief No. 548, Figure 4). 2017: 13.0.
 US_RATE <- 12.6
 SOURCE_NOTE <- paste0(
-  "Source: CDC/NCHS, National Vital Statistics System via CDC WONDER (Stats of the States, 2024); ",
-  "U.S. rate: NCHS Data Brief No. 548. Age-adjusted to the 2000 U.S. standard population.")
+  "Source: CDC/NCHS, National Vital Statistics System via CDC WONDER (Stats of the States, 2024). ",
+  "State rates are age-adjusted to the 2000 U.S. standard population; national age-adjusted rate ",
+  "12.6 per 100,000 (NCHS Data Brief No. 548).")
 
 # ---- 1. Read & validate --------------------------------------------------------
 data_file <- if (file.exists("mortality.xlsx")) "mortality.xlsx" else "Mortality.csv"
@@ -87,7 +88,9 @@ final_map <- ggplot(map_data) +
   scale_fill_gradient2(
     low = "#2166ac", mid = "#f7f7f7", high = "#b2182b", midpoint = US_RATE,
     limits = US_RATE + c(-lim, lim), oob = scales::squish,
-    name = paste0("Age-adjusted deaths per 100,000 (U.S. = ", US_RATE, ")"),
+    name = paste0("Age-adjusted deaths per 100,000 U.S. standard population (U.S. age-adjusted rate: ",
+                  sprintf("%.1f", US_RATE), ")"),
+    labels = scales::label_number(accuracy = 0.1),
     guide = guide_colorbar(title.position = "top", title.hjust = 0.5,
                            barwidth = unit(9, "cm"), barheight = unit(0.35, "cm"))
   ) +
@@ -122,16 +125,16 @@ lo_st <- mort |> slice_min(DeathRate, n = 1, with_ties = FALSE)
 ranked_plot <- ggplot(ranked, aes(DeathRate, statescode, fill = side)) +
   geom_col(width = 0.75) +
   geom_vline(xintercept = US_RATE, linetype = "dashed", color = "grey30") +
-  annotate("text", x = US_RATE + 0.3, y = 3, label = paste0("U.S. ", US_RATE),
+  annotate("text", x = US_RATE + 0.3, y = 3, label = paste0("U.S. age-adjusted rate: ", sprintf("%.1f", US_RATE)),
            hjust = 0, size = 3, color = "grey30") +
   geom_text(aes(label = sprintf("%.1f", DeathRate)), hjust = -0.15, size = 2.4) +
   scale_fill_manual(values = c("Above U.S." = "#b2182b", "At/below U.S." = "#2166ac"), name = NULL) +
   scale_x_continuous(expand = expansion(mult = c(0, 0.08))) +
-  labs(title = paste0(n_above, " of 51 jurisdictions are above the U.S. kidney disease death rate (", YEAR, ")"),
-       subtitle = paste0("Highest (", hi_st$statescode, " ", sprintf("%.1f", hi_st$DeathRate), ") is ",
+  labs(title = paste0("Age-adjusted kidney disease death rate by state, ", YEAR),
+       subtitle = paste0(n_above, " of 51 jurisdictions are above the U.S. rate. Highest (", hi_st$statescode, " ", sprintf("%.1f", hi_st$DeathRate), ") is ",
                          round(hi_st$DeathRate / lo_st$DeathRate, 1), "x the lowest (",
                          lo_st$statescode, " ", sprintf("%.1f", lo_st$DeathRate), ")"),
-       x = "Age-adjusted deaths per 100,000", y = NULL,
+       x = "Age-adjusted deaths per 100,000 U.S. standard population", y = NULL,
        caption = stringr::str_wrap(SOURCE_NOTE, 110)) +
   theme_minimal(base_size = 10) +
   theme(plot.title = element_text(face = "bold"), plot.title.position = "plot",

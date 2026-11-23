@@ -8,7 +8,7 @@
 - **23 of 51 jurisdictions** (50 states + DC) are above the national rate.
 - The highest rates are concentrated in the **mid-South**: Arkansas 21.2, Kentucky 20.8, Missouri 20.0, Louisiana 19.7, Mississippi 19.7, Alabama 18.7.
 - The lowest are Vermont 4.3, Washington 5.2, Minnesota 7.0 and Oregon 7.0. The highest rate is **4.9×** the lowest.
-- **Since 2017:** the same Southern belt still leads. The largest moves were Delaware (16.1 → 8.4) and Alaska (9.9 → 15.0). Both have small numbers of deaths (131 and 103), so treat single-year changes there with caution.
+- **Since 2017** (both years age-adjusted to the 2000 standard, so the comparison is like-for-like): the same Southern belt still leads. The largest moves were Delaware (16.1 → 8.4) and Alaska (9.9 → 15.0). Both have small numbers of deaths (131 and 103), so the change may reflect random variation or coding differences rather than a lasting trend. Don't read either as a confirmed improvement or deterioration.
 - **Public-health takeaway:** screening and early kidney-care programmes (for diabetes and hypertension, the main drivers of chronic kidney disease) have the most room for impact in AR, KY, MO, LA, MS and AL.
 
 ![States ranked against the U.S. rate](kidney_disease_ranked.png)
@@ -25,7 +25,7 @@
 
 **Checks:** the 2024 values were copied from the CDC page's table view. The 51 state death counts add up to exactly **55,081**, CDC's national total. Each state's age-adjusted rate also sits in a plausible range relative to its crude rate.
 
-**Benchmark note:** FastStats also shows "16.2 deaths per 100,000 population". That is the **crude** rate, not comparable with age-adjusted state rates, so the map uses the age-adjusted 12.6.
+**Benchmark note:** state rates are age-adjusted to the U.S. 2000 standard population. The national reference is therefore CDC's 2024 **age-adjusted** kidney disease death rate of **12.6** deaths per 100,000 standard population. FastStats' 16.2 deaths per 100,000 population is a **crude** rate and is not directly comparable.
 
 **Stability note:** CDC cautions that rates for states with few deaths can be statistically unstable (e.g. AK, VT, WY, DC).
 
