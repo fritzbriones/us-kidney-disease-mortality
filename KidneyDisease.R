@@ -18,9 +18,14 @@ suppressPackageStartupMessages({
   library(readxl)
 })
 
-# National age-adjusted kidney disease death rate for the data year
-# (2017: 13.0 per 100,000, NCHS Leading Causes of Death dataset bi63-dtpu).
-US_RATE <- 13.0
+# National AGE-ADJUSTED kidney disease death rate for the data year.
+# Use the age-adjusted figure, not the crude rate (FastStats' "deaths per
+# 100,000 population" of 16.2 for 2024 is crude and is not comparable).
+# 2024: 12.6 (NCHS Data Brief No. 548, Figure 4). 2017: 13.0.
+US_RATE <- 12.6
+SOURCE_NOTE <- paste0(
+  "Source: CDC/NCHS, National Vital Statistics System via CDC WONDER (Stats of the States, 2024); ",
+  "U.S. rate: NCHS Data Brief No. 548. Age-adjusted to the 2000 U.S. standard population.")
 
 # ---- 1. Read & validate --------------------------------------------------------
 data_file <- if (file.exists("mortality.xlsx")) "mortality.xlsx" else "Mortality.csv"
@@ -90,11 +95,10 @@ final_map <- ggplot(map_data) +
   labs(
     title = paste0("Kidney disease death rates by state, ", YEAR, ": highest in ",
                    paste(state.name[match(top$statescode[1:3], state.abb)], collapse = ", ")),
-    subtitle = paste0("Highest: ", paste0(top$statescode, " ", top$DeathRate, collapse = ", "),
+    subtitle = paste0("Highest: ", paste0(top$statescode, " ", sprintf("%.1f", top$DeathRate), collapse = ", "),
                       ".  Red = above the U.S. rate, blue = below."),
-    caption = paste0("Source: CDC/NCHS, National Vital Statistics System, ", YEAR,
-                     " (NCHS Leading Causes of Death dataset). Age-adjusted to the 2000 U.S. standard population.\n",
-                     "Boundaries: U.S. Census Bureau cartographic boundary file (2018, 1:500k). Alaska and Hawaii shown as insets, not to scale.")
+    caption = paste0(stringr::str_wrap(SOURCE_NOTE, 150), "\n",
+                     "Rates for states with few deaths (e.g. AK, VT, WY, DC) can be statistically unstable.\nBoundaries: U.S. Census Bureau cartographic boundary file (2018, 1:500k). Alaska and Hawaii shown as insets, not to scale.")
   ) +
   theme_void(base_size = 11) +
   theme(
@@ -120,15 +124,15 @@ ranked_plot <- ggplot(ranked, aes(DeathRate, statescode, fill = side)) +
   geom_vline(xintercept = US_RATE, linetype = "dashed", color = "grey30") +
   annotate("text", x = US_RATE + 0.3, y = 3, label = paste0("U.S. ", US_RATE),
            hjust = 0, size = 3, color = "grey30") +
-  geom_text(aes(label = DeathRate), hjust = -0.15, size = 2.4) +
+  geom_text(aes(label = sprintf("%.1f", DeathRate)), hjust = -0.15, size = 2.4) +
   scale_fill_manual(values = c("Above U.S." = "#b2182b", "At/below U.S." = "#2166ac"), name = NULL) +
   scale_x_continuous(expand = expansion(mult = c(0, 0.08))) +
   labs(title = paste0(n_above, " of 51 jurisdictions are above the U.S. kidney disease death rate (", YEAR, ")"),
-       subtitle = paste0("Highest (", hi_st$statescode, " ", hi_st$DeathRate, ") is ",
+       subtitle = paste0("Highest (", hi_st$statescode, " ", sprintf("%.1f", hi_st$DeathRate), ") is ",
                          round(hi_st$DeathRate / lo_st$DeathRate, 1), "x the lowest (",
-                         lo_st$statescode, " ", lo_st$DeathRate, ")"),
+                         lo_st$statescode, " ", sprintf("%.1f", lo_st$DeathRate), ")"),
        x = "Age-adjusted deaths per 100,000", y = NULL,
-       caption = "Source: CDC/NCHS, National Vital Statistics System.") +
+       caption = stringr::str_wrap(SOURCE_NOTE, 110)) +
   theme_minimal(base_size = 10) +
   theme(plot.title = element_text(face = "bold"), plot.title.position = "plot",
         panel.grid.major.y = element_blank(), legend.position = "top",

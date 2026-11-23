@@ -1,33 +1,39 @@
-# U.S. Kidney Disease Mortality by State (2017)
+# U.S. Kidney Disease Mortality by State (2024)
 
-![Kidney disease death rates by state, 2017](Kidney%20Disease%20Map.png)
+![Kidney disease death rates by state, 2024](Kidney%20Disease%20Map.png)
 
-## Key findings
+## Key findings (2024)
 
-- The U.S. age-adjusted kidney disease death rate was **13.0 per 100,000** in 2017.
-- **23 of 51 jurisdictions** (50 states + DC) were above the national rate.
-- The highest rates form a belt across the **Deep South and lower Midwest**: Mississippi 21.7, Louisiana 20.6, Arkansas 19.7, Missouri 19.6, Kentucky 19.4.
-- The lowest were Vermont 3.3, Washington 5.3 and Arizona 6.2. Mississippi's rate is **6.6×** Vermont's.
-- **Public-health takeaway:** kidney disease screening and early-care programmes have the most potential impact in the high-rate belt. Vermont's unusually low value is worth checking against neighbouring years before drawing conclusions.
+- The U.S. age-adjusted kidney disease death rate was **12.6 per 100,000** in 2024 (down from 13.1 in 2023 and 13.0 in 2017). Kidney disease was the **8th leading cause of death**, with 55,081 deaths.
+- **23 of 51 jurisdictions** (50 states + DC) are above the national rate.
+- The highest rates are concentrated in the **mid-South**: Arkansas 21.2, Kentucky 20.8, Missouri 20.0, Louisiana 19.7, Mississippi 19.7, Alabama 18.7.
+- The lowest are Vermont 4.3, Washington 5.2, Minnesota 7.0 and Oregon 7.0. The highest rate is **4.9×** the lowest.
+- **Since 2017:** the same Southern belt still leads. The largest moves were Delaware (16.1 → 8.4) and Alaska (9.9 → 15.0). Both have small numbers of deaths (131 and 103), so treat single-year changes there with caution.
+- **Public-health takeaway:** screening and early kidney-care programmes (for diabetes and hypertension, the main drivers of chronic kidney disease) have the most room for impact in AR, KY, MO, LA, MS and AL.
 
 ![States ranked against the U.S. rate](kidney_disease_ranked.png)
 
 ## Data source and verification
 
-- **Death rates:** CDC/NCHS, *NCHS – Leading Causes of Death: United States* (data.cdc.gov dataset `bi63-dtpu`), cause "Kidney disease" (nephritis, nephrotic syndrome and nephrosis), year 2017. Rates are age-adjusted to the 2000 U.S. standard population.
-- **Verified:** all 51 values in `mortality.xlsx` / `Mortality.csv` match the CDC dataset exactly (checked 2026-11-23), and the national rate of 13.0 also matches.
-- **Boundaries:** U.S. Census Bureau cartographic boundary file, 2018, 1:500k (`cb_2018_us_state_500k`).
+| Item | Source |
+|---|---|
+| State rates and deaths, 2024 | CDC/NCHS [Stats of the States: Kidney Disease Mortality](https://www.cdc.gov/nchs/state-stats/deaths/kidney-disease.html) (NVSS via CDC WONDER), age-adjusted to the 2000 U.S. standard population |
+| U.S. rate, 12.6 (age-adjusted) | [NCHS Data Brief No. 548](https://www.cdc.gov/nchs/data/databriefs/db548.pdf), Figure 4 |
+| U.S. deaths (55,081) and rank (8th) | [CDC FastStats: Kidney Disease](https://www.cdc.gov/nchs/fastats/kidney-disease.htm) |
+| 2017 comparison (`mortality_2017.csv`) | CDC dataset `bi63-dtpu` (all 51 values verified) |
+| Boundaries | U.S. Census Bureau cartographic boundary file, 2018, 1:500k |
 
-### Why 2017?
+**Checks:** the 2024 values were copied from the CDC page's table view. The 51 state death counts add up to exactly **55,081**, CDC's national total. Each state's age-adjusted rate also sits in a plausible range relative to its crude rate.
 
-The `bi63-dtpu` dataset ends in 2017. CDC has newer state rates (2024) on its
-[Stats of the States – Kidney Disease](https://www.cdc.gov/nchs/state-stats/deaths/kidney-disease.html) page.
-To update the map:
+**Benchmark note:** FastStats also shows "16.2 deaths per 100,000 population". That is the **crude** rate, not comparable with age-adjusted state rates, so the map uses the age-adjusted 12.6.
 
-1. Open that page, switch to the table view and copy the state rates (or export them from CDC WONDER).
-2. Replace the `Year`, `statescode` and `DeathRate` columns in `mortality.xlsx` with the new values.
-3. Set `US_RATE` at the top of `KidneyDisease.R` to that year's national rate.
-4. Run the script. The title, subtitle, colours and ranked chart all update from the data.
+**Stability note:** CDC cautions that rates for states with few deaths can be statistically unstable (e.g. AK, VT, WY, DC).
+
+### Updating to a newer year
+
+1. Replace `Year`, `DeathRate`, `Deaths` and `statescode` in `mortality.xlsx` (and `Mortality.csv`) with the new year's values from the Stats of the States page.
+2. Set `US_RATE` in `KidneyDisease.R` to that year's **age-adjusted** national rate (from the NCHS "Mortality in the United States" data brief).
+3. Run the script. Titles, colours and the ranked chart update automatically.
 
 ## Method
 
@@ -50,8 +56,9 @@ Outputs: `Kidney Disease Map.png`, `kidney_disease_ranked.png`, `data_validation
 | File | Description |
 |---|---|
 | `KidneyDisease.R` | Validates the data, then draws the map and the ranked chart |
-| `mortality.xlsx` | 2017 rates by state (the script's input) |
+| `mortality.xlsx` | 2024 rates and deaths by state (the script's input) |
 | `Mortality.csv` | Same data as plain text |
+| `mortality_2017.csv` | Previous 2017 data, kept for comparison |
 | `cb_2018_us_state_500k.*` | Census state boundaries |
 | `Kidney Disease Map.png`, `kidney_disease_ranked.png` | Outputs |
 | `data_validation_report.csv` | Validation summary |
