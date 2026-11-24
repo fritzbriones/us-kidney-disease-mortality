@@ -1,6 +1,6 @@
 # U.S. Kidney Disease Mortality by State (2024)
 
-![Kidney disease death rates by state, 2024](Kidney%20Disease%20Map.png)
+![Kidney disease death rates by state, 2024](images/kidney_disease_map.png)
 
 ## Key findings (2024)
 
@@ -11,7 +11,7 @@
 - **Since 2017** (both years age-adjusted to the 2000 standard, so the comparison is like-for-like): the same Southern belt still leads. The largest moves were Delaware (16.1 → 8.4) and Alaska (9.9 → 15.0). Both have small numbers of deaths (131 and 103), so the change may reflect random variation or coding differences rather than a lasting trend. Don't read either as a confirmed improvement or deterioration.
 - **Public-health takeaway:** screening and early kidney-care programmes (for diabetes and hypertension, the main drivers of chronic kidney disease) have the most room for impact in AR, KY, MO, LA, MS and AL.
 
-![States ranked against the U.S. rate](kidney_disease_ranked.png)
+![States ranked against the U.S. rate](images/kidney_disease_ranked.png)
 
 ## Data source and verification
 
@@ -20,7 +20,7 @@
 | State rates and deaths, 2024 | CDC/NCHS [Stats of the States: Kidney Disease Mortality](https://www.cdc.gov/nchs/state-stats/deaths/kidney-disease.html) (NVSS via CDC WONDER), age-adjusted to the 2000 U.S. standard population |
 | U.S. rate, 12.6 (age-adjusted) | [NCHS Data Brief No. 548](https://www.cdc.gov/nchs/data/databriefs/db548.pdf), Figure 4 |
 | U.S. deaths (55,081) and rank (8th) | [CDC FastStats: Kidney Disease](https://www.cdc.gov/nchs/fastats/kidney-disease.htm) |
-| 2017 comparison (`mortality_2017.csv`) | CDC dataset `bi63-dtpu` (all 51 values verified) |
+| 2017 comparison (`data/mortality_2017.csv`) | CDC dataset `bi63-dtpu` (all 51 values verified) |
 | Boundaries | U.S. Census Bureau cartographic boundary file, 2018, 1:500k |
 
 **Checks:** the 2024 values were copied from the CDC page's table view. The 51 state death counts add up to exactly **55,081**, CDC's national total. Each state's age-adjusted rate also sits in a plausible range relative to its crude rate.
@@ -31,37 +31,37 @@
 
 ### Updating to a newer year
 
-1. Replace `Year`, `DeathRate`, `Deaths` and `statescode` in `mortality.xlsx` (and `Mortality.csv`) with the new year's values from the Stats of the States page.
-2. Set `US_RATE` in `KidneyDisease.R` to that year's **age-adjusted** national rate (from the NCHS "Mortality in the United States" data brief).
+1. Replace `Year`, `DeathRate`, `Deaths` and `statescode` in `data/mortality.xlsx` (and `data/Mortality.csv`) with the new year's values from the Stats of the States page.
+2. Set `US_RATE` in `R/KidneyDisease.R` to that year's **age-adjusted** national rate (from the NCHS "Mortality in the United States" data brief).
 3. Run the script. Titles, colours and the ranked chart update automatically.
 
 ## Method
 
 - The map colours each state relative to the U.S. rate: **red is above, blue is below**. That shows where the burden is unusually high, not just raw values.
 - Alaska and Hawaii are shown as insets (not to scale). The far-western Aleutian Islands are left out of the inset.
-- The script stops if the file doesn't have exactly the 50 states + DC, has duplicates, has missing or negative rates, or mixes years. It writes `data_validation_report.csv`.
+- The script stops if the file doesn't have exactly the 50 states + DC, has duplicates, has missing or negative rates, or mixes years. It writes `output/data_validation_report.csv`.
 - Projection: NAD83 / Conus Albers (EPSG:5070).
 
 ## Reproduce
 
 ```r
 install.packages(c("tidyverse", "sf", "readxl"))
-source("KidneyDisease.R")
+source("R/KidneyDisease.R")   # run from the repository root
 ```
 
-Outputs: `Kidney Disease Map.png`, `kidney_disease_ranked.png`, `data_validation_report.csv`.
+Outputs: `images/kidney_disease_map.png`, `images/kidney_disease_ranked.png`, `output/data_validation_report.csv`.
 
 ## Files
 
 | File | Description |
 |---|---|
-| `KidneyDisease.R` | Validates the data, then draws the map and the ranked chart |
-| `mortality.xlsx` | 2024 rates and deaths by state (the script's input) |
-| `Mortality.csv` | Same data as plain text |
-| `mortality_2017.csv` | Previous 2017 data, kept for comparison |
-| `cb_2018_us_state_500k.*` | Census state boundaries |
-| `Kidney Disease Map.png`, `kidney_disease_ranked.png` | Outputs |
-| `data_validation_report.csv` | Validation summary |
+| `R/KidneyDisease.R` | Validates the data, then draws the map and the ranked chart |
+| `data/mortality.xlsx` | 2024 rates and deaths by state (the script's input) |
+| `data/Mortality.csv` | Same data as plain text |
+| `data/mortality_2017.csv` | Previous 2017 data, kept for comparison |
+| `data/boundaries/cb_2018_us_state_500k.*` | Census state boundaries (shapefile and its sidecar files) |
+| `images/` | The map and the ranked chart |
+| `output/data_validation_report.csv` | Validation summary |
 
 ## Limitations
 
