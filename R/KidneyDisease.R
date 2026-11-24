@@ -3,13 +3,14 @@
 # PURPOSE: Validated choropleth (50 states + DC, Alaska & Hawaii as insets)
 #          plus a ranked chart, coloured relative to the U.S. rate.
 #
-# INPUT  : mortality.xlsx (or Mortality.csv) with columns
+# INPUT  : data/mortality.xlsx (or data/Mortality.csv) with columns
 #            Year, statescode, DeathRate   (one row per state + DC)
 #          To update to a newer year, replace the file with the new year's
 #          values (e.g. CDC "Stats of the States" or CDC WONDER export) and set
 #          US_RATE below to that year's national age-adjusted rate.
-# OUTPUT : Kidney Disease Map.png, kidney_disease_ranked.png,
-#          data_validation_report.csv
+# OUTPUT : images/kidney_disease_map.png, images/kidney_disease_ranked.png,
+#          output/data_validation_report.csv
+# RUN    : from the repository root or from R/ (paths resolve either way)
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -28,8 +29,12 @@ SOURCE_NOTE <- paste0(
   "State rates are age-adjusted to the 2000 U.S. standard population; national age-adjusted rate ",
   "12.6 per 100,000 (NCHS Data Brief No. 548).")
 
+# Project root: works when run from the repo root or from R/
+ROOT <- if (dir.exists("data")) "." else ".."
+path <- function(...) file.path(ROOT, ...)
+
 # ---- 1. Read & validate --------------------------------------------------------
-data_file <- if (file.exists("mortality.xlsx")) "mortality.xlsx" else "Mortality.csv"
+data_file <- if (file.exists(path("data", "mortality.xlsx"))) path("data", "mortality.xlsx") else path("data", "Mortality.csv")
 raw <- if (grepl("xlsx$", data_file)) read_excel(data_file) else read_csv(data_file, show_col_types = FALSE)
 
 mort <- raw |>
@@ -49,7 +54,7 @@ problems <- c(
 if (length(problems)) stop("Data validation failed: ", paste(problems, collapse = "; "))
 YEAR <- unique(mort$Year)
 
-states <- st_read("cb_2018_us_state_500k.shp", quiet = TRUE) |>
+states <- st_read(path("data", "boundaries", "cb_2018_us_state_500k.shp"), quiet = TRUE) |>
   filter(STUSPS %in% study_codes) |>
   st_transform(5070) |>
   left_join(mort, by = c("STUSPS" = "statescode"))
@@ -59,7 +64,7 @@ write_csv(tibble(
   check = c("data_year", "records", "matched_features", "us_rate", "min", "max"),
   result = c(YEAR, nrow(mort), sum(!is.na(states$DeathRate)), US_RATE,
              min(mort$DeathRate), max(mort$DeathRate))
-), "data_validation_report.csv")
+), path("output", "data_validation_report.csv"))
 
 # ---- 2. Move Alaska & Hawaii into insets ---------------------------------------
 # Place each state so its centroid lands at a fixed target (EPSG:5070 metres)
@@ -113,7 +118,7 @@ final_map <- ggplot(map_data) +
     legend.title = element_text(size = 9, face = "bold"),
     plot.margin = margin(20, 20, 20, 20)
   )
-ggsave("Kidney Disease Map.png", final_map, width = 12, height = 8, dpi = 300, bg = "white")
+ggsave(path("images", "kidney_disease_map.png"), final_map, width = 12, height = 8, dpi = 300, bg = "white")
 
 # ---- 4. Ranked chart -------------------------------------------------------------
 ranked <- mort |>
@@ -140,6 +145,6 @@ ranked_plot <- ggplot(ranked, aes(DeathRate, statescode, fill = side)) +
   theme(plot.title = element_text(face = "bold"), plot.title.position = "plot",
         panel.grid.major.y = element_blank(), legend.position = "top",
         axis.text.y = element_text(size = 7), plot.caption = element_text(hjust = 0, color = "grey45"))
-ggsave("kidney_disease_ranked.png", ranked_plot, width = 8, height = 9, dpi = 200, bg = "white")
+ggsave(path("images", "kidney_disease_ranked.png"), ranked_plot, width = 8, height = 9, dpi = 200, bg = "white")
 
 message("Done: ", YEAR, " map and ranked chart written.")
